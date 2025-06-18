@@ -185,8 +185,8 @@ public class BodyLandmarkBonesHelper : BoneRotationHelper
 public class HeadRotationHelper : BoneRotationHelper
 {
     private Bone _neck, _head;
-    
-    public HeadRotationHelper (LandmarkWrapper landmarkWrapper, Bone neck, Bone head): base(landmarkWrapper)
+
+    public HeadRotationHelper(LandmarkWrapper landmarkWrapper, Bone neck, Bone head) : base(landmarkWrapper)
     {
         _neck = neck;
         _head = head;
@@ -197,18 +197,18 @@ public class HeadRotationHelper : BoneRotationHelper
         var leftEarPos = _landmarkWrapper.PosOf(LandmarkID.LeftEar);
         var rightEarPos = _landmarkWrapper.PosOf(LandmarkID.RightEar);
         var centerEarPos = (leftEarPos + rightEarPos) / 2;
-        
+
         var nosePos = _landmarkWrapper.PosOf(LandmarkID.Nose);
         var leftEyePos = _landmarkWrapper.PosOf(LandmarkID.LeftEye);
         var rightEyePos = _landmarkWrapper.PosOf(LandmarkID.RightEye);
         var facePos = (nosePos + leftEyePos + rightEyePos) / 3;
-        
+
         var faceForward = (facePos - centerEarPos).normalized;
-        var faceUp = Vector3.Cross( leftEarPos - rightEarPos, facePos - centerEarPos).normalized;
+        var faceUp = Vector3.Cross(leftEarPos - rightEarPos, facePos - centerEarPos).normalized;
         var faceRotation = Quaternion.LookRotation(faceForward, faceUp);
-        Debug.DrawLine(_neck.Position, _neck.Position + faceForward,Color.blue);
-        Debug.DrawLine(_neck.Position, _neck.Position + faceUp,Color.red);
-        
+        Debug.DrawLine(_neck.Position, _neck.Position + faceForward, Color.blue);
+        Debug.DrawLine(_neck.Position, _neck.Position + faceUp, Color.red);
+
         _neck.Rotation = faceRotation;
     }
 }
