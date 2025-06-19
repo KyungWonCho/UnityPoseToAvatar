@@ -3,15 +3,16 @@ using System.Collections;
 using Mediapipe.Tasks.Vision.PoseLandmarker;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
 {
   public class PoseLandmarkResultRunner : VisionTaskApiRunner<PoseLandmarker>
   {
     private Experimental.TextureFramePool _textureFramePool;
-    private LandmarkGizmo _landmarkGizmo = new();
+    private readonly LandmarkGizmo _landmarkGizmo = new();
     [SerializeField] private LandmarkRig landmarkRig;
-    [SerializeField] private PoseLandmarkerResultAnnotationController _poseLandmarkerResultAnnotationController;
+    [SerializeField] private PoseLandmarkerResultAnnotationController poseLandmarkerResultAnnotationController;
 
     public override void Stop()
     {
@@ -43,8 +44,8 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
       _textureFramePool = new Experimental.TextureFramePool(imageSource.textureWidth, imageSource.textureHeight);
       // NOTE: The screen will be resized later, keeping the aspect ratio.
       screen.Initialize(imageSource);
-      SetupAnnotationController(_poseLandmarkerResultAnnotationController, imageSource);
-      _poseLandmarkerResultAnnotationController.InitScreen(imageSource.textureWidth, imageSource.textureHeight);
+      SetupAnnotationController(poseLandmarkerResultAnnotationController, imageSource);
+      poseLandmarkerResultAnnotationController.InitScreen(imageSource.textureWidth, imageSource.textureHeight);
 
       var transformationOptions = imageSource.GetTransformationOptions();
       var flipHorizontally = transformationOptions.flipHorizontally;
@@ -64,23 +65,22 @@ namespace Mediapipe.Unity.Sample.PoseLandmarkDetection
         }
 
         // Build the input Image
-        Image image;
         req = textureFrame.ReadTextureAsync(imageSource.GetCurrentTexture(), flipHorizontally, flipVertically);
         yield return waitUntilReqDone;
 
         if (req.hasError) continue;
-        image = textureFrame.BuildCPUImage();
+        var image = textureFrame.BuildCPUImage();
         textureFrame.Release();
 
         if (taskApi.TryDetectForVideo(image, GetCurrentTimestampMillisec(), imageProcessingOptions, ref result))
         {
-          _poseLandmarkerResultAnnotationController.DrawNow(result);
+          poseLandmarkerResultAnnotationController.DrawNow(result);
           _landmarkGizmo.SetResult(result);
           landmarkRig.SetPose(result);
         }
         else
         {
-          _poseLandmarkerResultAnnotationController.DrawNow(default);
+          poseLandmarkerResultAnnotationController.DrawNow(default);
         } 
         DisposeAllMasks(result);
       }

@@ -5,17 +5,18 @@ using Mediapipe.Tasks.Components.Containers;
 
 public class LandmarkGizmo
 {
-    private PoseLandmarkerResult result;
+    private PoseLandmarkerResult _result;
+    private readonly Vector3 _offset = new Vector3(1, 1, 1);
 
     public void SetResult(PoseLandmarkerResult result)
     {
-        this.result = result;
+        this._result = result;
     }
     
     public void DrawLandmarks()
     {
-        if (result.poseLandmarks == null) return;
-        var poseWorldLandmark = result.poseWorldLandmarks[0];
+        if (_result.poseLandmarks == null) return;
+        var poseWorldLandmark = _result.poseWorldLandmarks[0];
         
         // Set the color with custom alpha.
         const float radius = 0.015f;
@@ -55,6 +56,6 @@ public class LandmarkGizmo
         var x = landmark.x;
         var y = -landmark.y;
         var z = landmark.z;
-        return new Vector3(x, y, z);
+        return new Vector3(x, y, z) + _offset;
     }
 }

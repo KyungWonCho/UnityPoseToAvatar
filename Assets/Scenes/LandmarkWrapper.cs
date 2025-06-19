@@ -44,7 +44,7 @@ public class LandmarkWrapper
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private Landmarks _landmarks;
-    private Quaternion _initialTilt;
+    // private Quaternion _initialTilt = Quaternion.AngleAxis(10f, Vector3.right);
     public bool Initialized => _landmarks.landmarks is not null;
 
     private Dictionary<LandmarkID, KalmanFilter> kf = new Dictionary<LandmarkID, KalmanFilter>();
@@ -61,11 +61,12 @@ public class LandmarkWrapper
     {
         var landmark = _landmarks.landmarks[(int)id];
 
-        kf[id].Predict();
-        kf[id].Update(landmark.x, -landmark.y, landmark.z, landmark.presence ?? 0.0f);
-
-        var pos = new Vector3((float)kf[id].X[0], (float)kf[id].X[1], (float)kf[id].X[2]);
-        return _initialTilt * pos;
+        var x = landmark.x;
+        var y = -landmark.y;
+        var z = landmark.z;
+        var pos = new Vector3(x, y, z);
+        // return _initialTilt * pos;
+        return pos;
     }
 
     public bool PresenceOf(LandmarkID id, float threshold)
